@@ -10,7 +10,7 @@ namespace Bugsnag.Platforms
         private static readonly string BUGSNAG_CLASS = "com.bugsnag.android.Client";
 
         private AndroidJavaObject bugsnagClient;
-        
+
         public void Init (string apiKey)
         {
             Debug.Log ("Android#Init");
@@ -49,7 +49,7 @@ namespace Bugsnag.Platforms
         public string AppVersion
         {
             set {
-                bugsnagClient.Call ("setAppVersion", value);
+                getClient().Call ("setAppVersion", value);
             }
         }
 

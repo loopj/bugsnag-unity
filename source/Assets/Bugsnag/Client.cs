@@ -4,6 +4,8 @@ using UnityEngine;
 namespace Bugsnag
 {
     public class Client {
+        private static Platforms.IPlatform bridge;
+
         public static void Init (string apiKey)
         {
             getBridge().Init(apiKey);
@@ -14,7 +16,7 @@ namespace Bugsnag
             getBridge().Notify(exception);
         }
 
-        public string AppVersion
+        public static string AppVersion
         {
             set {
                 getBridge().AppVersion = value;
@@ -23,15 +25,19 @@ namespace Bugsnag
 
         private static Platforms.IPlatform getBridge ()
         {
-            #if UNITY_EDITOR
-            return new Platforms.Dummy();
-            #elif UNITY_ANDROID
-            return new Platforms.Android();
-            #elif UNITY_IPHONE
-            return new Platforms.Dummy();
-            #else
-            return new Platforms.Dummy();
-            #endif
+            if (bridge == null) {
+                #if UNITY_EDITOR
+                bridge = new Platforms.Dummy();
+                #elif UNITY_ANDROID
+                bridge = new Platforms.Android();
+                #elif UNITY_IPHONE
+                bridge = new Platforms.Dummy();
+                #else
+                bridge = new Platforms.Dummy();
+                #endif
+            }
+
+            return bridge;
         }
     }
 }
