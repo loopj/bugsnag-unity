@@ -11,6 +11,55 @@ namespace Bugsnag.Platforms
 
         private AndroidJavaObject bugsnagClient;
 
+        public string AppVersion
+        {
+            set {
+                getClient().Call ("setAppVersion", value);
+            }
+        }
+
+        public string Context
+        {
+            set {
+                getClient().Call ("setContext", value);
+            }
+        }
+
+        public string Endpoint
+        {
+            set {
+                getClient().Call ("setEndpoint", value);
+            }
+        }
+
+        public string ReleaseStage
+        {
+            set {
+                getClient().Call ("setReleaseStage", value);
+            }
+        }
+
+        public string UserId
+        {
+            set {
+                getClient().Call ("setUserId", value);
+            }
+        }
+
+        public string UserEmail
+        {
+            set {
+                getClient().Call ("setUserEmail", value);
+            }
+        }
+
+        public string UserName
+        {
+            set {
+                getClient().Call ("setUserName", value);
+            }
+        }
+
         public void Init (string apiKey)
         {
             Debug.Log ("Android#Init");
@@ -44,13 +93,6 @@ namespace Bugsnag.Platforms
         public void Notify (Exception exception, Severity severity, MetaData metaData)
         {
             Debug.Log ("Android#Notify");
-        }
-
-        public string AppVersion
-        {
-            set {
-                getClient().Call ("setAppVersion", value);
-            }
         }
 
         private AndroidJavaObject getClient ()

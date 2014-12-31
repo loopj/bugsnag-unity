@@ -6,6 +6,55 @@ namespace Bugsnag
     public class Client {
         private static Platforms.IPlatform bridge;
 
+        public static string AppVersion
+        {
+            set {
+                getBridge().AppVersion = value;
+            }
+        }
+
+        public static string Context
+        {
+            set {
+                getBridge().Context = value;
+            }
+        }
+
+        public static string Endpoint
+        {
+            set {
+                getBridge().Endpoint = value;
+            }
+        }
+
+        public static string ReleaseStage
+        {
+            set {
+                getBridge().ReleaseStage = value;
+            }
+        }
+
+        public static string UserId
+        {
+            set {
+                getBridge().UserId = value;
+            }
+        }
+
+        public static string UserEmail
+        {
+            set {
+                getBridge().UserEmail = value;
+            }
+        }
+
+        public static string UserName
+        {
+            set {
+                getBridge().UserName = value;
+            }
+        }
+
         public static void Init (string apiKey)
         {
             getBridge().Init(apiKey);
@@ -16,11 +65,19 @@ namespace Bugsnag
             getBridge().Notify(exception);
         }
 
-        public static string AppVersion
+        public static void Notify (Exception exception, Severity severity)
         {
-            set {
-                getBridge().AppVersion = value;
-            }
+            getBridge().Notify(exception, severity);
+        }
+
+        public static void Notify (Exception exception, MetaData metaData)
+        {
+            getBridge().Notify(exception, metaData);
+        }
+
+        public static void Notify (Exception exception, Severity severity, MetaData metaData)
+        {
+            getBridge().Notify(exception, severity, metaData);
         }
 
         private static Platforms.IPlatform getBridge ()
