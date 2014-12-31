@@ -1,10 +1,14 @@
 using System;
 using UnityEngine;
-using Bugsnag;
 
 public class BugsnagDemoScript : MonoBehaviour
 {
-    void OnGUI()
+    void Awake ()
+    {
+        Bugsnag.Client.Init("066f5ad3590596f9aa8d601ea89af845");
+    }
+
+    void OnGUI ()
     {
         // Puts some basic buttons onto the screen.
         GUI.skin.button.fontSize = (int) (0.05f * Screen.height);
@@ -17,7 +21,7 @@ public class BugsnagDemoScript : MonoBehaviour
         }
     }
 
-    private void NotifyBugsnag()
+    private void NotifyBugsnag ()
     {
         Bugsnag.Client.Notify(new InvalidOperationException("Non-fatal"));
     }

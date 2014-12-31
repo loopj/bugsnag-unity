@@ -1,8 +1,8 @@
 using System;
 
-namespace Bugsnag.Clients
+namespace Bugsnag.Platforms
 {
-    public interface IClient
+    public interface IPlatform
     {
         void Init (string apiKey);
         void Notify(Exception exception);

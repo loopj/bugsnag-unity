@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
 
-namespace Bugsnag.Clients
+namespace Bugsnag.Platforms
 {
-    internal class DummyClient : IClient
+    internal class Dummy : IPlatform
     {
         public void Init (string apiKey)
         {
