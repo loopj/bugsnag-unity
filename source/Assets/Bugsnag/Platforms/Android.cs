@@ -20,7 +20,7 @@ namespace Bugsnag.Platforms
             AndroidJavaObject activity = unityPlayerClass.GetStatic<AndroidJavaObject> ("currentActivity");
 
             // Construct a Bugsnag Android Client
-            bugsnagClient = new AndroidJavaObject (BUGSNAG_CLASS, activity, apiKey)
+            bugsnagClient = new AndroidJavaObject (BUGSNAG_CLASS, activity, apiKey);
         }
 
         public void Notify(Exception exception)
