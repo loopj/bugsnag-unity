@@ -14,6 +14,13 @@ namespace Bugsnag
             getBridge().Notify(exception);
         }
 
+        public string AppVersion
+        {
+            set {
+                getBridge().AppVersion = value;
+            }
+        }
+
         private static Platforms.IPlatform getBridge ()
         {
             #if UNITY_EDITOR

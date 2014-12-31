@@ -6,6 +6,7 @@ public class BugsnagDemoScript : MonoBehaviour
     void Awake ()
     {
         Bugsnag.Client.Init("066f5ad3590596f9aa8d601ea89af845");
+        Bugsnag.Client.AppVersion = "1.2.3";
     }
 
     void OnGUI ()
