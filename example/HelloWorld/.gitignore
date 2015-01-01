@@ -5,7 +5,6 @@
 [Tt]emp/
 [Oo]bj/
 [Bb]uild/
-[Aa]ssets/
 ProjectSettings/
 *.meta
 *.apk
@@ -22,3 +21,6 @@ ProjectSettings/
 
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
+
+Assets/Bugsnag
+Assets/Plugins
