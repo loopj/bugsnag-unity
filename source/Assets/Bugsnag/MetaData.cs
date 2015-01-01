@@ -1,6 +1,7 @@
 namespace Bugsnag
 {
-    public class MetaData {
+    public class MetaData
+    {
 
     }
 }

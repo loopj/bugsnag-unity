@@ -18,11 +18,11 @@ namespace Bugsnag
             }
         }
 
-        void OnEnable () {
+        void OnEnable() {
 
         }
 
-        void OnDisable () {
+        void OnDisable() {
 
         }
 

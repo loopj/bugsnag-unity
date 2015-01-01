@@ -10,14 +10,14 @@ namespace Bugsnag.Platforms
     {
         private AndroidJavaObject androidClient;
 
-        public Android (string apiKey)
+        public Android(string apiKey)
         {
             // Get the current Activity
-            AndroidJavaClass unityPlayerClass = new AndroidJavaClass ("com.unity3d.player.UnityPlayer");
-            AndroidJavaObject activity = unityPlayerClass.GetStatic<AndroidJavaObject> ("currentActivity");
+            AndroidJavaClass unityPlayerClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+            AndroidJavaObject activity = unityPlayerClass.GetStatic<AndroidJavaObject>("currentActivity");
 
             // Construct a Bugsnag Android Client
-            androidClient = new AndroidJavaObject ("com.bugsnag.android.Client", activity, apiKey);
+            androidClient = new AndroidJavaObject("com.bugsnag.android.Client", activity, apiKey);
         }
 
         public string AppVersion
@@ -69,7 +69,7 @@ namespace Bugsnag.Platforms
             }
         }
 
-        public void Notify (String errorClass, String message, StackFrame[] stacktrace, Severity severity, MetaData metaData)
+        public void Notify(String errorClass, String message, StackFrame[] stacktrace, Severity severity, MetaData metaData)
         {
             // Convert stack frames into Java style
             IntPtr? stackframeArrayObject = null;
@@ -81,7 +81,7 @@ namespace Bugsnag.Platforms
                 string fileName = frame.GetFileName();
                 int lineNumber = frame.GetFileLineNumber();
 
-                AndroidJavaObject frameObject = new AndroidJavaObject ("java.lang.StackTraceElement", className, methodName, fileName, lineNumber);
+                AndroidJavaObject frameObject = new AndroidJavaObject("java.lang.StackTraceElement", className, methodName, fileName, lineNumber);
                 if(stackframeArrayObject == null) {
                     stackframeArrayObject = AndroidJNI.NewObjectArray(stacktrace.Length, frameObject.GetRawClass(), frameObject.GetRawObject());
                 } else {

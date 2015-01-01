@@ -5,7 +5,8 @@ using UnityEngine;
 
 namespace Bugsnag
 {
-    public class Client {
+    public class Client
+    {
         private static Platforms.IPlatform platform;
 
         public static string AppVersion
@@ -77,22 +78,22 @@ namespace Bugsnag
             }
         }
 
-        public static void Notify (Exception exception)
+        public static void Notify(Exception exception)
         {
             Notify(exception, Severity.Warning, null);
         }
 
-        public static void Notify (Exception exception, Severity severity)
+        public static void Notify(Exception exception, Severity severity)
         {
             Notify(exception, severity, null);
         }
 
-        public static void Notify (Exception exception, MetaData metaData)
+        public static void Notify(Exception exception, MetaData metaData)
         {
             Notify(exception, Severity.Warning, metaData);
         }
 
-        public static void Notify (Exception exception, Severity severity, MetaData metaData)
+        public static void Notify(Exception exception, Severity severity, MetaData metaData)
         {
             // Exception must be present
             if(exception == null) {
@@ -110,7 +111,7 @@ namespace Bugsnag
             GetPlatform().Notify(exception.GetType().ToString(), exception.Message, stacktrace, severity, metaData);
         }
 
-        private static Platforms.IPlatform GetPlatform ()
+        private static Platforms.IPlatform GetPlatform()
         {
             if (platform == null) {
                 throw new InvalidOperationException("You must call Bugsnag.Init before any other Bugsnag methods");

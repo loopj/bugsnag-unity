@@ -40,6 +40,6 @@ namespace Bugsnag.Platforms
             set;
         }
 
-        void Notify (String errorClass, String message, StackFrame[] stacktrace, Severity severity, MetaData metaData);
+        void Notify(String errorClass, String message, StackFrame[] stacktrace, Severity severity, MetaData metaData);
     }
 }
