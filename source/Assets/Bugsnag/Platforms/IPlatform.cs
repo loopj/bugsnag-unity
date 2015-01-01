@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 namespace Bugsnag.Platforms
 {
@@ -41,9 +42,6 @@ namespace Bugsnag.Platforms
 
         void Init (string apiKey);
 
-        void Notify (Exception exception);
-        void Notify (Exception exception, Severity severity);
-        void Notify (Exception exception, MetaData metaData);
-        void Notify (Exception exception, Severity severity, MetaData metaData);
+        void Notify (String errorClass, String message, StackFrame[] stacktrace, Severity severity, MetaData metaData);
     }
 }

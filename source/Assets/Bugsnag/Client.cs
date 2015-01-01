@@ -1,100 +1,139 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 namespace Bugsnag
 {
     public class Client {
-        private static Platforms.IPlatform bridge;
+        private static Platforms.IPlatform platform;
 
         public static string AppVersion
         {
             set {
-                getBridge().AppVersion = value;
+                GetPlatform().AppVersion = value;
             }
         }
 
         public static string Context
         {
             set {
-                getBridge().Context = value;
+                GetPlatform().Context = value;
             }
         }
 
         public static string Endpoint
         {
             set {
-                getBridge().Endpoint = value;
+                GetPlatform().Endpoint = value;
             }
         }
 
         public static string ReleaseStage
         {
             set {
-                getBridge().ReleaseStage = value;
+                GetPlatform().ReleaseStage = value;
             }
         }
 
         public static string UserId
         {
             set {
-                getBridge().UserId = value;
+                GetPlatform().UserId = value;
             }
         }
 
         public static string UserEmail
         {
             set {
-                getBridge().UserEmail = value;
+                GetPlatform().UserEmail = value;
             }
         }
 
         public static string UserName
         {
             set {
-                getBridge().UserName = value;
+                GetPlatform().UserName = value;
             }
         }
 
         public static void Init (string apiKey)
         {
-            getBridge().Init(apiKey);
+            GetPlatform().Init(apiKey);
+
+            // Set the release stage
+            if(UnityEngine.Debug.isDebugBuild) {
+                ReleaseStage = "development";
+            } else {
+                ReleaseStage = "production";
+            }
         }
 
         public static void Notify (Exception exception)
         {
-            getBridge().Notify(exception);
+            Notify(exception, Severity.Warning, null);
         }
 
         public static void Notify (Exception exception, Severity severity)
         {
-            getBridge().Notify(exception, severity);
+            Notify(exception, severity, null);
         }
 
         public static void Notify (Exception exception, MetaData metaData)
         {
-            getBridge().Notify(exception, metaData);
+            Notify(exception, Severity.Warning, metaData);
         }
 
         public static void Notify (Exception exception, Severity severity, MetaData metaData)
         {
-            getBridge().Notify(exception, severity, metaData);
+            // Exception must be present
+            if(exception == null) {
+                return;
+            }
+
+            // Get or generate the stacktrace
+            StackFrame[] stacktrace;
+            if(exception.StackTrace != null) {
+                stacktrace = new StackTrace(exception, true).GetFrames();
+            } else {
+                stacktrace = GenerateStackTrace();
+            }
+
+            GetPlatform().Notify(exception.GetType().ToString(), exception.Message, stacktrace, severity, metaData);
         }
 
-        private static Platforms.IPlatform getBridge ()
+        private static Platforms.IPlatform GetPlatform ()
         {
-            if (bridge == null) {
+            if (platform == null) {
                 #if UNITY_EDITOR
-                bridge = new Platforms.Dummy();
+                platform = new Platforms.Dummy();
                 #elif UNITY_ANDROID
-                bridge = new Platforms.Android();
+                platform = new Platforms.Android();
                 #elif UNITY_IPHONE
-                bridge = new Platforms.Dummy();
+                platform = new Platforms.Dummy();
                 #else
-                bridge = new Platforms.Dummy();
+                platform = new Platforms.Dummy();
                 #endif
             }
 
-            return bridge;
+            return platform;
+        }
+
+        private static StackFrame[] GenerateStackTrace()
+        {
+            // Get the current callstack
+            StackTrace stacktrace = new StackTrace(true);
+
+            // Filter out any frames in the Bugsnag namespace
+            List<StackFrame> frameList = new List<StackFrame>();
+            foreach(StackFrame frame in stacktrace.GetFrames()) {
+                string ns = frame.GetMethod().DeclaringType.Namespace;
+                if(ns == null || !ns.Split('.')[0].Equals("Bugsnag")) {
+                    frameList.Add(frame);
+                }
+            }
+
+            return frameList.ToArray();
         }
     }
 }

@@ -5,8 +5,7 @@ public class BugsnagDemoScript : MonoBehaviour
 {
     void Awake ()
     {
-        Bugsnag.Client.Init("066f5ad3590596f9aa8d601ea89af845");
-        Bugsnag.Client.AppVersion = "1.2.3";
+
     }
 
     void OnGUI ()
@@ -24,6 +23,17 @@ public class BugsnagDemoScript : MonoBehaviour
 
     private void NotifyBugsnag ()
     {
-        Bugsnag.Client.Notify(new InvalidOperationException("Non-fatal"));
+        NotifyChild();
+    }
+
+    private void NotifyChild ()
+    {
+        try {
+            throw new InvalidOperationException("Handled");
+        } catch (Exception e) {
+            Bugsnag.Client.Notify(e);
+        }
+
+        Bugsnag.Client.Notify(new InvalidOperationException("Not thrown"));
     }
 }

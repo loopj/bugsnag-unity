@@ -1,6 +1,7 @@
 #if UNITY_ANDROID
 
 using System;
+using System.Diagnostics;
 using UnityEngine;
 
 namespace Bugsnag.Platforms
@@ -62,8 +63,6 @@ namespace Bugsnag.Platforms
 
         public void Init (string apiKey)
         {
-            Debug.Log ("Android#Init");
-
             // Get the current Activity
             AndroidJavaClass unityPlayerClass = new AndroidJavaClass ("com.unity3d.player.UnityPlayer");
             AndroidJavaObject activity = unityPlayerClass.GetStatic<AndroidJavaObject> ("currentActivity");
@@ -72,27 +71,35 @@ namespace Bugsnag.Platforms
             bugsnagClient = new AndroidJavaObject (BUGSNAG_CLASS, activity, apiKey);
         }
 
-        public void Notify(Exception exception)
+        public void Notify (String errorClass, String message, StackFrame[] stacktrace, Severity severity, MetaData metaData)
         {
-            Debug.Log ("Android#Notify");
+            // Convert stack frames into Java style
+            IntPtr? stackframeArrayObject = null;
+            for (int i = 0; i < stacktrace.Length; i++) {
+                StackFrame frame = stacktrace[i];
 
-            // TODO: Work out which format to pass stacktraces in
-            // bugsnagClient.Call("notify", "Class", "Message")
-        }
+                string className = frame.GetMethod().DeclaringType.FullName;
+                string methodName = frame.GetMethod().Name;
+                string fileName = frame.GetFileName();
+                int lineNumber = frame.GetFileLineNumber();
 
-        public void Notify (Exception exception, Severity severity)
-        {
-            Debug.Log ("Android#Notify");
-        }
+                AndroidJavaObject frameObject = new AndroidJavaObject ("java.lang.StackTraceElement", className, methodName, fileName, lineNumber);
+                if(stackframeArrayObject == null) {
+                    stackframeArrayObject = AndroidJNI.NewObjectArray(stacktrace.Length, frameObject.GetRawClass(), frameObject.GetRawObject());
+                } else {
+                    AndroidJNI.SetObjectArrayElement((IntPtr)stackframeArrayObject, i, frameObject.GetRawObject());
+                }
+            }
 
-        public void Notify (Exception exception, MetaData metaData)
-        {
-            Debug.Log ("Android#Notify");
-        }
+            // Build the arguments
+            jvalue[] args =  new jvalue[3];
+            args[0] = new jvalue() { l = AndroidJNI.NewStringUTF(errorClass) };
+            args[1] = new jvalue() { l = AndroidJNI.NewStringUTF(message) };
+            args[2] = new jvalue() { l = (IntPtr)stackframeArrayObject };
 
-        public void Notify (Exception exception, Severity severity, MetaData metaData)
-        {
-            Debug.Log ("Android#Notify");
+            // Call Android's notify method
+            IntPtr clientConstructorId = AndroidJNI.GetMethodID(getClient().GetRawClass(), "notify", "(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/StackTraceElement;)V");
+            AndroidJNI.CallObjectMethod(getClient().GetRawObject(), clientConstructorId, args);
         }
 
         private AndroidJavaObject getClient ()
