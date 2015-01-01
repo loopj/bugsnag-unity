@@ -10,10 +10,12 @@ namespace Bugsnag
         void Awake() {
             DontDestroyOnLoad(this);
 
-            // TODO: Check non-empty api key before init
-
-            Bugsnag.Client.Init(BugsnagApiKey);
-            Bugsnag.Client.Context = Application.loadedLevelName;
+            if(String.IsNullOrEmpty(BugsnagApiKey)) {
+                UnityEngine.Debug.LogError("You must set your Bugsnag API key in your Bugsnag GameObject!");
+            } else {
+                Bugsnag.Client.Init(BugsnagApiKey);
+                Bugsnag.Client.Context = Application.loadedLevelName;
+            }
         }
 
         void OnEnable () {

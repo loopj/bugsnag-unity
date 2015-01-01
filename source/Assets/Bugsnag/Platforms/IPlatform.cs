@@ -40,8 +40,6 @@ namespace Bugsnag.Platforms
             set;
         }
 
-        void Init (string apiKey);
-
         void Notify (String errorClass, String message, StackFrame[] stacktrace, Severity severity, MetaData metaData);
     }
 }

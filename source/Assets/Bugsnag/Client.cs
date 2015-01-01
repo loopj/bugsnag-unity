@@ -59,7 +59,15 @@ namespace Bugsnag
 
         public static void Init (string apiKey)
         {
-            GetPlatform().Init(apiKey);
+            #if UNITY_EDITOR
+            platform = new Platforms.Dummy(apiKey);
+            #elif UNITY_ANDROID
+            platform = new Platforms.Android(apiKey);
+            #elif UNITY_IPHONE
+            platform = new Platforms.Dummy(apiKey);
+            #else
+            platform = new Platforms.Dummy(apiKey);
+            #endif
 
             // Set the release stage
             if(UnityEngine.Debug.isDebugBuild) {
@@ -105,15 +113,7 @@ namespace Bugsnag
         private static Platforms.IPlatform GetPlatform ()
         {
             if (platform == null) {
-                #if UNITY_EDITOR
-                platform = new Platforms.Dummy();
-                #elif UNITY_ANDROID
-                platform = new Platforms.Android();
-                #elif UNITY_IPHONE
-                platform = new Platforms.Dummy();
-                #else
-                platform = new Platforms.Dummy();
-                #endif
+                throw new InvalidOperationException("You must call Bugsnag.Init before any other Bugsnag methods");
             }
 
             return platform;

@@ -6,6 +6,11 @@ namespace Bugsnag.Platforms
 {
     internal class Dummy : IPlatform
     {
+        public Dummy (string apiKey)
+        {
+            UnityEngine.Debug.Log ("Dummy#Init");
+        }
+
         public string AppVersion
         {
             set {
@@ -53,11 +58,6 @@ namespace Bugsnag.Platforms
             set {
                 UnityEngine.Debug.Log ("Dummy#UserName#set");
             }
-        }
-
-        public void Init (string apiKey)
-        {
-            UnityEngine.Debug.Log ("Dummy#Init");
         }
 
         public void Notify (String errorClass, String message, StackFrame[] stacktrace, Severity severity, MetaData metaData)

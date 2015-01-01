@@ -8,67 +8,65 @@ namespace Bugsnag.Platforms
 {
     internal class Android : IPlatform
     {
-        private static readonly string BUGSNAG_CLASS = "com.bugsnag.android.Client";
+        private AndroidJavaObject androidClient;
 
-        private AndroidJavaObject bugsnagClient;
-
-        public string AppVersion
-        {
-            set {
-                getClient().Call ("setAppVersion", value);
-            }
-        }
-
-        public string Context
-        {
-            set {
-                getClient().Call ("setContext", value);
-            }
-        }
-
-        public string Endpoint
-        {
-            set {
-                getClient().Call ("setEndpoint", value);
-            }
-        }
-
-        public string ReleaseStage
-        {
-            set {
-                getClient().Call ("setReleaseStage", value);
-            }
-        }
-
-        public string UserId
-        {
-            set {
-                getClient().Call ("setUserId", value);
-            }
-        }
-
-        public string UserEmail
-        {
-            set {
-                getClient().Call ("setUserEmail", value);
-            }
-        }
-
-        public string UserName
-        {
-            set {
-                getClient().Call ("setUserName", value);
-            }
-        }
-
-        public void Init (string apiKey)
+        public Android (string apiKey)
         {
             // Get the current Activity
             AndroidJavaClass unityPlayerClass = new AndroidJavaClass ("com.unity3d.player.UnityPlayer");
             AndroidJavaObject activity = unityPlayerClass.GetStatic<AndroidJavaObject> ("currentActivity");
 
             // Construct a Bugsnag Android Client
-            bugsnagClient = new AndroidJavaObject (BUGSNAG_CLASS, activity, apiKey);
+            androidClient = new AndroidJavaObject ("com.bugsnag.android.Client", activity, apiKey);
+        }
+
+        public string AppVersion
+        {
+            set {
+                androidClient.Call ("setAppVersion", value);
+            }
+        }
+
+        public string Context
+        {
+            set {
+                androidClient.Call ("setContext", value);
+            }
+        }
+
+        public string Endpoint
+        {
+            set {
+                androidClient.Call ("setEndpoint", value);
+            }
+        }
+
+        public string ReleaseStage
+        {
+            set {
+                androidClient.Call ("setReleaseStage", value);
+            }
+        }
+
+        public string UserId
+        {
+            set {
+                androidClient.Call ("setUserId", value);
+            }
+        }
+
+        public string UserEmail
+        {
+            set {
+                androidClient.Call ("setUserEmail", value);
+            }
+        }
+
+        public string UserName
+        {
+            set {
+                androidClient.Call ("setUserName", value);
+            }
         }
 
         public void Notify (String errorClass, String message, StackFrame[] stacktrace, Severity severity, MetaData metaData)
@@ -92,26 +90,17 @@ namespace Bugsnag.Platforms
             }
 
             // Build the arguments
-            jvalue[] args =  new jvalue[3];
-            args[0] = new jvalue() { l = AndroidJNI.NewStringUTF(errorClass) };
-            args[1] = new jvalue() { l = AndroidJNI.NewStringUTF(message) };
-            args[2] = new jvalue() { l = (IntPtr)stackframeArrayObject };
+            jvalue[] args =  new jvalue[3] {
+                new jvalue() { l = AndroidJNI.NewStringUTF(errorClass) },
+                new jvalue() { l = AndroidJNI.NewStringUTF(message) },
+                new jvalue() { l = (IntPtr)stackframeArrayObject }
+            };
 
             // Call Android's notify method
-            IntPtr clientConstructorId = AndroidJNI.GetMethodID(getClient().GetRawClass(), "notify", "(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/StackTraceElement;)V");
-            AndroidJNI.CallObjectMethod(getClient().GetRawObject(), clientConstructorId, args);
-        }
-
-        private AndroidJavaObject getClient ()
-        {
-            if (bugsnagClient == null) {
-                throw new InvalidOperationException("You must call Bugsnag.Init before any other Bugsnag methods");
-            }
-
-            return bugsnagClient;
+            IntPtr clientConstructorId = AndroidJNI.GetMethodID(androidClient.GetRawClass(), "notify", "(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/StackTraceElement;)V");
+            AndroidJNI.CallObjectMethod(androidClient.GetRawObject(), clientConstructorId, args);
         }
     }
 }
-
 
 #endif
