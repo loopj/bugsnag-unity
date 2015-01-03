@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Bugsnag.Platforms
 {
-    public interface IPlatform
+    internal interface IPlatform
     {
         string AppVersion
         {

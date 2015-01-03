@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace Bugsnag
 {
     public class Client
     {
-        private static Platforms.IPlatform platform;
+        private static Regex EXCEPTION_CLASS_REGEX = new Regex(@"^(?<errorClass>\S+):\s*(?<message>.*)");
+        private static string STACKFRAME_PATTERN = @"^(?<method>\S+) \(.*?\) \(at (?<file>.*?):(?<lineNumber>\d+)\)$";
+
+        private static Platforms.IPlatform platform = null;
 
         public static string AppVersion
         {
@@ -60,6 +64,14 @@ namespace Bugsnag
 
         public static void Init (string apiKey)
         {
+            if(platform != null) {
+                System.Console.Write("[Bugsnag] Bugsnag is already initialized");
+                return;
+            }
+
+            UnityEngine.Debug.Log("[Bugsnag] Initializing with apiKey " + apiKey);
+
+            // Create the platform instance
             #if UNITY_EDITOR
             platform = new Platforms.Dummy(apiKey);
             #elif UNITY_ANDROID
@@ -76,6 +88,9 @@ namespace Bugsnag
             } else {
                 ReleaseStage = "production";
             }
+
+            // Attach log handler
+            Application.RegisterLogCallback(LogHandler);
         }
 
         public static void Notify(Exception exception)
@@ -109,6 +124,34 @@ namespace Bugsnag
             }
 
             GetPlatform().Notify(exception.GetType().ToString(), exception.Message, stacktrace, severity, metaData);
+        }
+
+        private static void LogHandler(string logString, string stackTrace, LogType type)
+        {
+            System.Console.Write("TODO: Log handler!");
+            System.Console.Write(logString);
+            System.Console.Write(stackTrace);
+
+            // Parse the exception class and message (if appropriateun)
+            Match match = EXCEPTION_CLASS_REGEX.Match(logString);
+            if(match.Success) {
+                Console.WriteLine(match.Groups["errorClass"].Value);
+                Console.WriteLine(match.Groups["message"].Value.Trim());
+            } else {
+                Console.WriteLine("No match");
+            }
+
+            // Parse stacktrace string?
+            foreach(Match frameMatch in Regex.Matches(stackTrace, STACKFRAME_PATTERN, RegexOptions.Multiline)) {
+                Console.WriteLine(match.Value);
+
+                Console.WriteLine(frameMatch.Groups["method"].Value);
+                Console.WriteLine(frameMatch.Groups["file"].Value);
+                Console.WriteLine(frameMatch.Groups["lineNumber"].Value);
+
+                // TODO: Something like this
+                // new StackTraceElement(frameMatch.Groups["method"].Value, frameMatch.Groups["file"].Value, frameMatch.Groups["lineNumber"].Value);
+            }
         }
 
         private static Platforms.IPlatform GetPlatform()

@@ -1,3 +1,5 @@
+.PHONY: all clean copy-library example-android
+
 UNITY_BINARY = /Applications/Unity/Unity.app/Contents/MacOS/Unity -batchmode -quit
 PACKAGE_NAME = Bugsnag.unitypackage
 
@@ -19,7 +21,10 @@ clean:
 	rm -rf $(BUILD_PATH) $(TEMP_PROJECT_PATH)
 	git clean -f -d -x example
 
-# Build and run the example app on an attached Android device
-example-android:
+# Copy the Bugsnag plugin files into the example app
+copy-library:
 	cp -r source/Assets/* $(EXAMPLE_PROJECT_PATH)/Assets
+
+# Build and run the example app on an attached Android device
+example-android: copy-library
 	$(UNITY_BINARY) -projectpath $(EXAMPLE_PROJECT_PATH) -executeMethod PerformBuild.BuildAndroid
